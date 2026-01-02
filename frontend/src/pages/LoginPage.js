@@ -22,10 +22,10 @@ export const LoginPage = () => {
 
     try {
       await login(email, password);
-      toast.success('Login successful!');
+      toast.success(t.messages.loginSuccess);
       navigate('/dashboard');
     } catch (error) {
-      toast.error(error.message || 'Login failed. Please check your credentials.');
+      toast.error(error.message || t.messages.loginFailed);
     } finally {
       setLoading(false);
     }
