@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from '../contexts/I18nContext';
 import { Button } from './ui/button';
 import {
   LayoutDashboard,
@@ -16,21 +17,22 @@ import {
   ChevronRight,
 } from 'lucide-react';
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Users', href: '/users', icon: Users },
-  { name: 'Courses', href: '/courses', icon: MapPin },
-  { name: 'Tee Times', href: '/tee-times', icon: Clock },
-  { name: 'Bookings', href: '/bookings', icon: Calendar },
-  { name: 'Competitions', href: '/competitions', icon: Trophy },
-];
-
-export const DashboardLayout = ({ children }) => {
+const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
+
+  const navigation = [
+    { name: t.nav.dashboard, href: '/dashboard', icon: LayoutDashboard },
+    { name: t.nav.users, href: '/users', icon: Users },
+    { name: t.nav.courses, href: '/courses', icon: MapPin },
+    { name: t.nav.teeTimes, href: '/tee-times', icon: Clock },
+    { name: t.nav.bookings, href: '/bookings', icon: Calendar },
+    { name: t.nav.competitions, href: '/competitions', icon: Trophy },
+  ];
 
   const handleLogout = () => {
     logout();
@@ -63,7 +65,7 @@ export const DashboardLayout = ({ children }) => {
                 <Trophy className="w-5 h-5 text-primary-foreground" />
               </div>
               {!collapsed && (
-                <span className="text-xl font-semibold text-foreground">TeeBook</span>
+                <span className="text-xl font-semibold text-foreground">{t.branding.appName}</span>
               )}
             </Link>
             <Button
@@ -114,7 +116,9 @@ export const DashboardLayout = ({ children }) => {
                     <p className="text-sm font-medium text-foreground truncate">
                       {user?.firstName} {user?.lastName}
                     </p>
-                    <p className="text-xs text-muted-foreground truncate">{user?.role}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {user?.role === 'admin' ? t.auth.admin : t.auth.user}
+                    </p>
                   </div>
                 </div>
               )}
@@ -123,6 +127,7 @@ export const DashboardLayout = ({ children }) => {
                 size="icon"
                 onClick={handleLogout}
                 className="shrink-0"
+                title={t.auth.logout}
               >
                 <LogOut className="w-4 h-4" />
               </Button>
@@ -161,7 +166,7 @@ export const DashboardLayout = ({ children }) => {
             <div className="flex-1" />
             <div className="flex items-center space-x-4">
               <span className="text-sm text-muted-foreground hidden sm:inline">
-                Welcome back, <span className="font-medium text-foreground">{user?.firstName}</span>
+                {t.common.welcomeBack}, <span className="font-medium text-foreground">{user?.firstName}</span>
               </span>
             </div>
           </div>
@@ -177,3 +182,5 @@ export const DashboardLayout = ({ children }) => {
     </div>
   );
 };
+
+export { DashboardLayout };
