@@ -40,14 +40,14 @@ export const LoginPage = () => {
             <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-4">
               <Trophy className="w-9 h-9 text-primary-foreground" />
             </div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">TeeBook Admin</h1>
-            <p className="text-muted-foreground text-center">Sign in to manage your golf platform</p>
+            <h1 className="text-3xl font-bold text-foreground mb-2">{t.branding.adminPanel}</h1>
+            <p className="text-muted-foreground text-center">{t.branding.tagline}</p>
           </div>
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.auth.email}</Label>
               <Input
                 id="email"
                 type="email"
@@ -60,7 +60,7 @@ export const LoginPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t.auth.password}</Label>
               <Input
                 id="password"
                 type="password"
@@ -80,10 +80,10 @@ export const LoginPage = () => {
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Signing in...
+                  {t.auth.signingIn}
                 </>
               ) : (
-                'Sign In'
+                t.auth.signIn
               )}
             </Button>
           </form>
@@ -91,9 +91,9 @@ export const LoginPage = () => {
           {/* Register Link */}
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{' '}
+              {t.auth.dontHaveAccount}{' '}
               <Link to="/register" className="text-primary hover:underline font-medium">
-                Register here
+                {t.auth.registerHere}
               </Link>
             </p>
           </div>
@@ -101,7 +101,7 @@ export const LoginPage = () => {
           {/* Demo credentials */}
           <div className="mt-6 p-4 bg-muted/50 rounded-lg">
             <p className="text-xs text-muted-foreground text-center">
-              <strong>Demo:</strong> Create an admin account via /register with role: "admin"
+              {t.branding.demoNote}
             </p>
           </div>
         </div>
