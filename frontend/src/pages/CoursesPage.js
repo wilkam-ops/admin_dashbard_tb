@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DashboardLayout } from '../components/DashboardLayout';
 import { PageHeader, LoadingSpinner, EmptyState } from '../components/SharedComponents';
+import { useTranslation } from '../contexts/I18nContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -35,6 +36,7 @@ export const CoursesPage = () => {
     description: '',
     holesCount: 18,
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadCourses();
@@ -45,7 +47,7 @@ export const CoursesPage = () => {
       const data = await api.getCourses();
       setCourses(data);
     } catch (error) {
-      toast.error('Failed to load courses');
+      toast.error(t.messages.loadFailed);
     } finally {
       setLoading(false);
     }
@@ -72,27 +74,27 @@ export const CoursesPage = () => {
     try {
       if (editMode) {
         await api.updateCourse(currentCourse.id, formData);
-        toast.success('Course updated successfully');
+        toast.success(t.messages.courseUpdated);
       } else {
         await api.createCourse(formData);
-        toast.success('Course created successfully');
+        toast.success(t.messages.courseCreated);
       }
       setDialogOpen(false);
       loadCourses();
     } catch (error) {
-      toast.error(`Failed to ${editMode ? 'update' : 'create'} course`);
+      toast.error(editMode ? t.messages.courseUpdateFailed : t.messages.courseCreatedFailed);
     }
   };
 
   const handleDelete = async (courseId) => {
-    if (!window.confirm('Are you sure you want to delete this course?')) return;
+    if (!window.confirm(t.messages.confirmDelete + ' ce parcours ?')) return;
     
     try {
       await api.deleteCourse(courseId);
-      toast.success('Course deleted successfully');
+      toast.success(t.messages.courseDeleted);
       loadCourses();
     } catch (error) {
-      toast.error('Failed to delete course');
+      toast.error(t.messages.courseDeleteFailed);
     }
   };
 
@@ -107,12 +109,12 @@ export const CoursesPage = () => {
   return (
     <DashboardLayout>
       <PageHeader
-        title="Golf Courses"
-        description="Manage golf courses available for booking"
+        title={t.courses.title}
+        description={t.courses.description}
         action={
           <Button onClick={handleAdd}>
             <Plus className="w-4 h-4 mr-2" />
-            Add Course
+            {t.courses.addCourse}
           </Button>
         }
       />
@@ -120,12 +122,12 @@ export const CoursesPage = () => {
       {courses.length === 0 ? (
         <EmptyState
           icon={MapPin}
-          title="No courses yet"
-          description="Get started by adding your first golf course."
+          title={t.courses.noCourses}
+          description={t.courses.noCoursesDescription}
           action={
             <Button onClick={handleAdd}>
               <Plus className="w-4 h-4 mr-2" />
-              Add Course
+              {t.courses.addCourse}
             </Button>
           }
         />
@@ -134,10 +136,10 @@ export const CoursesPage = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Holes</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t.courses.courseName}</TableHead>
+                <TableHead>{t.courses.description}</TableHead>
+                <TableHead>{t.courses.holesCount}</TableHead>
+                <TableHead className="text-right">{t.common.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -173,35 +175,35 @@ export const CoursesPage = () => {
         </div>
       )}
 
-      {/* Add/Edit Dialog */}
+      {/* Dialogue Ajouter/Modifier */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editMode ? 'Edit Course' : 'Add New Course'}</DialogTitle>
+            <DialogTitle>{editMode ? t.courses.editCourse : t.courses.addNewCourse}</DialogTitle>
             <DialogDescription>
-              {editMode ? 'Update course information.' : 'Create a new golf course.'}
+              {editMode ? t.courses.updateCourseInfo : t.courses.createNewCourse}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Course Name</Label>
+              <Label>{t.courses.courseName}</Label>
               <Input
-                placeholder="Pebble Beach Golf Links"
+                placeholder={t.courses.courseNamePlaceholder}
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
             <div className="space-y-2">
-              <Label>Description</Label>
+              <Label>{t.courses.description}</Label>
               <Textarea
-                placeholder="A brief description of the golf course..."
+                placeholder={t.courses.descriptionPlaceholder}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
               />
             </div>
             <div className="space-y-2">
-              <Label>Number of Holes</Label>
+              <Label>{t.courses.holesCount}</Label>
               <Input
                 type="number"
                 value={formData.holesCount}
@@ -211,10 +213,10 @@ export const CoursesPage = () => {
           </div>
           <div className="flex justify-end space-x-2">
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Cancel
+              {t.common.cancel}
             </Button>
             <Button onClick={handleSubmit}>
-              {editMode ? 'Save Changes' : 'Create Course'}
+              {editMode ? t.common.saveChanges : t.courses.createCourse}
             </Button>
           </div>
         </DialogContent>
