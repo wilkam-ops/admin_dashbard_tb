@@ -126,6 +126,7 @@ function App() {
         </Routes>
         <Toaster position="top-right" />
       </AuthProvider>
+      </I18nProvider>
     </BrowserRouter>
   );
 }
