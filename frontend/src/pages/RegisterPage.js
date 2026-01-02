@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from '../contexts/I18nContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -15,10 +16,11 @@ export const RegisterPage = () => {
     firstName: '',
     lastName: '',
     handicapIndex: '',
-    role: 'admin', // Default to admin for dashboard access
+    role: 'admin',
   });
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -32,10 +34,10 @@ export const RegisterPage = () => {
       };
       
       await register(userData);
-      toast.success('Registration successful!');
+      toast.success(t.messages.registrationSuccess);
       navigate('/dashboard');
     } catch (error) {
-      toast.error(error.message || 'Registration failed. Please try again.');
+      toast.error(error.message || t.messages.registrationFailed);
     } finally {
       setLoading(false);
     }
@@ -54,28 +56,28 @@ export const RegisterPage = () => {
             <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-4">
               <Trophy className="w-9 h-9 text-primary-foreground" />
             </div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Create Account</h1>
-            <p className="text-muted-foreground text-center">Join TeeBook Admin Platform</p>
+            <h1 className="text-3xl font-bold text-foreground mb-2">{t.auth.createAccount}</h1>
+            <p className="text-muted-foreground text-center">{t.branding.registerTagline}</p>
           </div>
 
           {/* Register Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName">{t.auth.firstName}</Label>
                 <Input
                   id="firstName"
-                  placeholder="John"
+                  placeholder="Jean"
                   value={formData.firstName}
                   onChange={(e) => handleChange('firstName', e.target.value)}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName">{t.auth.lastName}</Label>
                 <Input
                   id="lastName"
-                  placeholder="Doe"
+                  placeholder="Dupont"
                   value={formData.lastName}
                   onChange={(e) => handleChange('lastName', e.target.value)}
                   required
@@ -84,11 +86,11 @@ export const RegisterPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.auth.email}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="john@example.com"
+                placeholder="jean@exemple.com"
                 value={formData.email}
                 onChange={(e) => handleChange('email', e.target.value)}
                 required
@@ -96,7 +98,7 @@ export const RegisterPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t.auth.password}</Label>
               <Input
                 id="password"
                 type="password"
@@ -108,7 +110,7 @@ export const RegisterPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="handicapIndex">Handicap Index (optional)</Label>
+              <Label htmlFor="handicapIndex">{t.auth.handicapIndex} ({t.common.optional})</Label>
               <Input
                 id="handicapIndex"
                 type="number"
@@ -120,14 +122,14 @@ export const RegisterPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
+              <Label htmlFor="role">{t.auth.role}</Label>
               <Select value={formData.role} onValueChange={(value) => handleChange('role', value)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="admin">{t.auth.admin}</SelectItem>
+                  <SelectItem value="user">{t.auth.user}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -140,10 +142,10 @@ export const RegisterPage = () => {
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Creating account...
+                  {t.auth.creatingAccount}
                 </>
               ) : (
-                'Create Account'
+                t.auth.createAccount
               )}
             </Button>
           </form>
@@ -151,9 +153,9 @@ export const RegisterPage = () => {
           {/* Login Link */}
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
-              Already have an account?{' '}
+              {t.auth.alreadyHaveAccount}{' '}
               <Link to="/login" className="text-primary hover:underline font-medium">
-                Sign in here
+                {t.auth.signInHere}
               </Link>
             </p>
           </div>
