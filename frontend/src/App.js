@@ -54,7 +54,8 @@ const PublicRoute = ({ children }) => {
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
+      <I18nProvider>
+        <AuthProvider>
         <Routes>
           <Route
             path="/login"
