@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DashboardLayout } from '../components/DashboardLayout';
 import { PageHeader, LoadingSpinner, EmptyState } from '../components/SharedComponents';
+import { useTranslation } from '../contexts/I18nContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -10,7 +11,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '../components/ui/dialog';
 import {
   Select,
@@ -39,6 +39,7 @@ export const UsersPage = () => {
   const [editUser, setEditUser] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [formData, setFormData] = useState({});
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadUsers();
@@ -49,7 +50,7 @@ export const UsersPage = () => {
       const data = await api.getUsers();
       setUsers(data);
     } catch (error) {
-      toast.error('Failed to load users');
+      toast.error(t.messages.loadFailed);
     } finally {
       setLoading(false);
     }
@@ -74,11 +75,11 @@ export const UsersPage = () => {
         handicapIndex: formData.handicapIndex ? parseFloat(formData.handicapIndex) : null,
       };
       await api.updateUser(editUser.id, updateData);
-      toast.success('User updated successfully');
+      toast.success(t.messages.userUpdated);
       setEditDialogOpen(false);
       loadUsers();
     } catch (error) {
-      toast.error('Failed to update user');
+      toast.error(t.messages.userUpdateFailed);
     }
   };
 
@@ -102,16 +103,16 @@ export const UsersPage = () => {
   return (
     <DashboardLayout>
       <PageHeader
-        title="Users"
-        description="Manage platform users and their permissions"
+        title={t.users.title}
+        description={t.users.description}
       />
 
-      {/* Search */}
+      {/* Recherche */}
       <div className="mb-6">
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Search users..."
+            placeholder={t.users.searchUsers}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -119,24 +120,24 @@ export const UsersPage = () => {
         </div>
       </div>
 
-      {/* Users Table */}
+      {/* Table utilisateurs */}
       {filteredUsers.length === 0 ? (
         <EmptyState
           icon={UsersIcon}
-          title="No users found"
-          description="No users match your search criteria."
+          title={t.users.noUsersFound}
+          description={t.users.noUsersDescription}
         />
       ) : (
         <div className="bg-card rounded-lg border border-border overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Handicap</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>{t.users.name}</TableHead>
+                <TableHead>{t.users.email}</TableHead>
+                <TableHead>{t.users.role}</TableHead>
+                <TableHead>{t.users.handicap}</TableHead>
+                <TableHead>{t.users.status}</TableHead>
+                <TableHead>{t.users.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -148,13 +149,13 @@ export const UsersPage = () => {
                   <TableCell className="text-muted-foreground">{user.email}</TableCell>
                   <TableCell>
                     <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
-                      {user.role}
+                      {user.role === 'admin' ? t.auth.admin : t.auth.user}
                     </Badge>
                   </TableCell>
                   <TableCell>{user.handicapIndex || '-'}</TableCell>
                   <TableCell>
                     <Badge variant={user.isActive ? 'default' : 'destructive'}>
-                      {user.isActive ? 'Active' : 'Inactive'}
+                      {user.isActive ? t.users.active : t.users.inactive}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -173,26 +174,26 @@ export const UsersPage = () => {
         </div>
       )}
 
-      {/* Edit Dialog */}
+      {/* Dialogue de modification */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
+            <DialogTitle>{t.users.editUser}</DialogTitle>
             <DialogDescription>
-              Update user information and permissions.
+              {t.users.updateUserInfo}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>First Name</Label>
+                <Label>{t.auth.firstName}</Label>
                 <Input
                   value={formData.firstName || ''}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Last Name</Label>
+                <Label>{t.auth.lastName}</Label>
                 <Input
                   value={formData.lastName || ''}
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
@@ -200,7 +201,7 @@ export const UsersPage = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Handicap Index</Label>
+              <Label>{t.auth.handicapIndex}</Label>
               <Input
                 type="number"
                 step="0.1"
@@ -209,7 +210,7 @@ export const UsersPage = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label>Role</Label>
+              <Label>{t.auth.role}</Label>
               <Select
                 value={formData.role}
                 onValueChange={(value) => setFormData({ ...formData, role: value })}
@@ -218,13 +219,13 @@ export const UsersPage = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="admin">{t.auth.admin}</SelectItem>
+                  <SelectItem value="user">{t.auth.user}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Status</Label>
+              <Label>{t.users.status}</Label>
               <Select
                 value={formData.isActive ? 'active' : 'inactive'}
                 onValueChange={(value) => setFormData({ ...formData, isActive: value === 'active' })}
@@ -233,17 +234,17 @@ export const UsersPage = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="active">{t.users.active}</SelectItem>
+                  <SelectItem value="inactive">{t.users.inactive}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="flex justify-end space-x-2">
             <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
-              Cancel
+              {t.common.cancel}
             </Button>
-            <Button onClick={handleUpdate}>Save Changes</Button>
+            <Button onClick={handleUpdate}>{t.common.saveChanges}</Button>
           </div>
         </DialogContent>
       </Dialog>
