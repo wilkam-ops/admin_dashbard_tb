@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { I18nProvider } from './contexts/I18nContext';
+import { I18nProvider, useTranslation } from './contexts/I18nContext';
 import { Toaster } from './components/ui/sonner';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
@@ -14,6 +14,7 @@ import { CompetitionsPage } from './pages/CompetitionsPage';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
+  const { t } = useTranslation();
 
   if (loading) {
     return (
@@ -31,8 +32,8 @@ const ProtectedRoute = ({ children }) => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Access Denied</h1>
-          <p className="text-muted-foreground">You need admin privileges to access this dashboard.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-2">{t.messages.accessDenied}</h1>
+          <p className="text-muted-foreground">{t.messages.adminRequired}</p>
         </div>
       </div>
     );
