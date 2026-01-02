@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DashboardLayout } from '../components/DashboardLayout';
 import { PageHeader, LoadingSpinner, EmptyState } from '../components/SharedComponents';
+import { useTranslation } from '../contexts/I18nContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -42,6 +43,7 @@ export const TeeTimesPage = () => {
     time: '',
     maxSlots: 4,
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadData();
@@ -56,7 +58,7 @@ export const TeeTimesPage = () => {
       setTeeTimes(teeTimesData);
       setCourses(coursesData);
     } catch (error) {
-      toast.error('Failed to load data');
+      toast.error(t.messages.loadFailed);
     } finally {
       setLoading(false);
     }
@@ -74,29 +76,29 @@ export const TeeTimesPage = () => {
         ...formData,
         maxSlots: parseInt(formData.maxSlots),
       });
-      toast.success('Tee time created successfully');
+      toast.success(t.messages.teeTimeCreated);
       setDialogOpen(false);
       loadData();
     } catch (error) {
-      toast.error('Failed to create tee time');
+      toast.error(t.messages.teeTimeCreatedFailed);
     }
   };
 
   const handleDelete = async (teeTimeId) => {
-    if (!window.confirm('Are you sure you want to delete this tee time?')) return;
+    if (!window.confirm(t.messages.confirmDelete + ' cet horaire ?')) return;
     
     try {
       await api.deleteTeeTime(teeTimeId);
-      toast.success('Tee time deleted successfully');
+      toast.success(t.messages.teeTimeDeleted);
       loadData();
     } catch (error) {
-      toast.error('Failed to delete tee time');
+      toast.error(t.messages.teeTimeDeleteFailed);
     }
   };
 
   const getCourseName = (courseId) => {
     const course = courses.find(c => c.id === courseId);
-    return course ? course.name : 'Unknown Course';
+    return course ? course.name : t.common.unknown;
   };
 
   if (loading) {
@@ -110,12 +112,12 @@ export const TeeTimesPage = () => {
   return (
     <DashboardLayout>
       <PageHeader
-        title="Tee Times"
-        description="Manage available tee times for bookings"
+        title={t.teeTimes.title}
+        description={t.teeTimes.description}
         action={
           <Button onClick={handleAdd} disabled={courses.length === 0}>
             <Plus className="w-4 h-4 mr-2" />
-            Add Tee Time
+            {t.teeTimes.addTeeTime}
           </Button>
         }
       />
@@ -123,18 +125,18 @@ export const TeeTimesPage = () => {
       {courses.length === 0 ? (
         <div className="bg-card rounded-lg border border-border p-6">
           <p className="text-muted-foreground text-center">
-            Please add golf courses first before creating tee times.
+            {t.teeTimes.addCoursesFirst}
           </p>
         </div>
       ) : teeTimes.length === 0 ? (
         <EmptyState
           icon={Clock}
-          title="No tee times yet"
-          description="Get started by adding available tee times for your courses."
+          title={t.teeTimes.noTeeTimes}
+          description={t.teeTimes.noTeeTimesDescription}
           action={
             <Button onClick={handleAdd}>
               <Plus className="w-4 h-4 mr-2" />
-              Add Tee Time
+              {t.teeTimes.addTeeTime}
             </Button>
           }
         />
@@ -143,12 +145,12 @@ export const TeeTimesPage = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Course</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead>Available Slots</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t.teeTimes.course}</TableHead>
+                <TableHead>{t.teeTimes.date}</TableHead>
+                <TableHead>{t.teeTimes.time}</TableHead>
+                <TableHead>{t.teeTimes.availableSlots}</TableHead>
+                <TableHead>{t.users.status}</TableHead>
+                <TableHead className="text-right">{t.common.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -164,7 +166,7 @@ export const TeeTimesPage = () => {
                   </TableCell>
                   <TableCell>
                     <Badge variant={teeTime.availableSlots > 0 ? 'default' : 'secondary'}>
-                      {teeTime.availableSlots > 0 ? 'Available' : 'Full'}
+                      {teeTime.availableSlots > 0 ? t.teeTimes.available : t.teeTimes.full}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -183,24 +185,24 @@ export const TeeTimesPage = () => {
         </div>
       )}
 
-      {/* Add Dialog */}
+      {/* Dialogue Ajouter */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add New Tee Time</DialogTitle>
+            <DialogTitle>{t.teeTimes.addNewTeeTime}</DialogTitle>
             <DialogDescription>
-              Create a new available tee time slot.
+              {t.teeTimes.createTeeTimeSlot}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Golf Course</Label>
+              <Label>{t.teeTimes.course}</Label>
               <Select
                 value={formData.courseId}
                 onValueChange={(value) => setFormData({ ...formData, courseId: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a course" />
+                  <SelectValue placeholder={t.teeTimes.selectCourse} />
                 </SelectTrigger>
                 <SelectContent>
                   {courses.map((course) => (
@@ -212,7 +214,7 @@ export const TeeTimesPage = () => {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Date</Label>
+              <Label>{t.teeTimes.date}</Label>
               <Input
                 type="date"
                 value={formData.date}
@@ -220,7 +222,7 @@ export const TeeTimesPage = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label>Time</Label>
+              <Label>{t.teeTimes.time}</Label>
               <Input
                 type="time"
                 value={formData.time}
@@ -228,7 +230,7 @@ export const TeeTimesPage = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label>Max Slots</Label>
+              <Label>{t.teeTimes.maxSlots}</Label>
               <Input
                 type="number"
                 value={formData.maxSlots}
@@ -240,10 +242,10 @@ export const TeeTimesPage = () => {
           </div>
           <div className="flex justify-end space-x-2">
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Cancel
+              {t.common.cancel}
             </Button>
             <Button onClick={handleSubmit} disabled={!formData.courseId}>
-              Create Tee Time
+              {t.common.create}
             </Button>
           </div>
         </DialogContent>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DashboardLayout } from '../components/DashboardLayout';
 import { PageHeader, LoadingSpinner, EmptyState } from '../components/SharedComponents';
+import { useTranslation } from '../contexts/I18nContext';
 import {
   Table,
   TableBody,
@@ -20,6 +21,7 @@ export const BookingsPage = () => {
   const [teeTimes, setTeeTimes] = useState({});
   const [courses, setCourses] = useState({});
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadData();
@@ -36,7 +38,7 @@ export const BookingsPage = () => {
       
       setBookings(bookingsData);
       
-      // Create lookup maps
+      // Créer des maps de lookup
       const usersMap = {};
       usersData.forEach(user => {
         usersMap[user.id] = `${user.firstName} ${user.lastName}`;
@@ -55,7 +57,7 @@ export const BookingsPage = () => {
       });
       setCourses(coursesMap);
     } catch (error) {
-      toast.error('Failed to load bookings');
+      toast.error(t.messages.loadFailed);
     } finally {
       setLoading(false);
     }
@@ -72,39 +74,39 @@ export const BookingsPage = () => {
   return (
     <DashboardLayout>
       <PageHeader
-        title="Bookings"
-        description="View all tee time bookings"
+        title={t.bookings.title}
+        description={t.bookings.description}
       />
 
       {bookings.length === 0 ? (
         <EmptyState
           icon={Calendar}
-          title="No bookings yet"
-          description="Bookings will appear here once users start making reservations."
+          title={t.bookings.noBookings}
+          description={t.bookings.noBookingsDescription}
         />
       ) : (
         <div className="bg-card rounded-lg border border-border overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Course</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead>Players</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Booked On</TableHead>
+                <TableHead>{t.bookings.user}</TableHead>
+                <TableHead>{t.bookings.course}</TableHead>
+                <TableHead>{t.bookings.date}</TableHead>
+                <TableHead>{t.bookings.time}</TableHead>
+                <TableHead>{t.bookings.players}</TableHead>
+                <TableHead>{t.bookings.status}</TableHead>
+                <TableHead>{t.bookings.bookedOn}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {bookings.map((booking) => {
                 const teeTime = teeTimes[booking.teeTimeId] || {};
-                const courseName = courses[teeTime.courseId] || 'Unknown';
+                const courseName = courses[teeTime.courseId] || t.common.unknown;
                 
                 return (
                   <TableRow key={booking.id}>
                     <TableCell className="font-medium">
-                      {users[booking.userId] || 'Unknown User'}
+                      {users[booking.userId] || t.common.unknown}
                     </TableCell>
                     <TableCell>{courseName}</TableCell>
                     <TableCell>{teeTime.date || '-'}</TableCell>
@@ -112,11 +114,11 @@ export const BookingsPage = () => {
                     <TableCell>{booking.playersCount}</TableCell>
                     <TableCell>
                       <Badge variant={booking.status === 'confirmed' ? 'default' : 'secondary'}>
-                        {booking.status}
+                        {booking.status === 'confirmed' ? t.bookings.confirmed : t.bookings.cancelled}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {new Date(booking.createdAt).toLocaleDateString()}
+                      {new Date(booking.createdAt).toLocaleDateString('fr-FR')}
                     </TableCell>
                   </TableRow>
                 );
