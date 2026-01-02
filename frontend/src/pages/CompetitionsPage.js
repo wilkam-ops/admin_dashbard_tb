@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DashboardLayout } from '../components/DashboardLayout';
 import { PageHeader, LoadingSpinner, EmptyState } from '../components/SharedComponents';
+import { useTranslation } from '../contexts/I18nContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -38,6 +39,7 @@ export const CompetitionsPage = () => {
     maxParticipants: 50,
     entryFee: 0,
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadCompetitions();
@@ -48,7 +50,7 @@ export const CompetitionsPage = () => {
       const data = await api.getCompetitions();
       setCompetitions(data);
     } catch (error) {
-      toast.error('Failed to load competitions');
+      toast.error(t.messages.loadFailed);
     } finally {
       setLoading(false);
     }
@@ -84,27 +86,27 @@ export const CompetitionsPage = () => {
       
       if (editMode) {
         await api.updateCompetition(currentCompetition.id, submitData);
-        toast.success('Competition updated successfully');
+        toast.success(t.messages.competitionUpdated);
       } else {
         await api.createCompetition(submitData);
-        toast.success('Competition created successfully');
+        toast.success(t.messages.competitionCreated);
       }
       setDialogOpen(false);
       loadCompetitions();
     } catch (error) {
-      toast.error(`Failed to ${editMode ? 'update' : 'create'} competition`);
+      toast.error(editMode ? t.messages.competitionUpdateFailed : t.messages.competitionCreatedFailed);
     }
   };
 
   const handleDelete = async (competitionId) => {
-    if (!window.confirm('Are you sure you want to delete this competition?')) return;
+    if (!window.confirm(t.messages.confirmDelete + ' cette compétition ?')) return;
     
     try {
       await api.deleteCompetition(competitionId);
-      toast.success('Competition deleted successfully');
+      toast.success(t.messages.competitionDeleted);
       loadCompetitions();
     } catch (error) {
-      toast.error('Failed to delete competition');
+      toast.error(t.messages.competitionDeleteFailed);
     }
   };
 
@@ -121,6 +123,19 @@ export const CompetitionsPage = () => {
     }
   };
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'upcoming':
+        return t.competitions.upcoming;
+      case 'ongoing':
+        return t.competitions.ongoing;
+      case 'completed':
+        return t.competitions.completed;
+      default:
+        return status;
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -132,12 +147,12 @@ export const CompetitionsPage = () => {
   return (
     <DashboardLayout>
       <PageHeader
-        title="Competitions"
-        description="Organize and manage golf competitions"
+        title={t.competitions.title}
+        description={t.competitions.description}
         action={
           <Button onClick={handleAdd}>
             <Plus className="w-4 h-4 mr-2" />
-            Add Competition
+            {t.competitions.addCompetition}
           </Button>
         }
       />
@@ -145,12 +160,12 @@ export const CompetitionsPage = () => {
       {competitions.length === 0 ? (
         <EmptyState
           icon={Trophy}
-          title="No competitions yet"
-          description="Get started by creating your first golf competition."
+          title={t.competitions.noCompetitions}
+          description={t.competitions.noCompetitionsDescription}
           action={
             <Button onClick={handleAdd}>
               <Plus className="w-4 h-4 mr-2" />
-              Add Competition
+              {t.competitions.addCompetition}
             </Button>
           }
         />
@@ -159,12 +174,12 @@ export const CompetitionsPage = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Participants</TableHead>
-                <TableHead>Entry Fee</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t.competitions.name}</TableHead>
+                <TableHead>{t.competitions.date}</TableHead>
+                <TableHead>{t.competitions.participants}</TableHead>
+                <TableHead>{t.competitions.entryFee}</TableHead>
+                <TableHead>{t.competitions.status}</TableHead>
+                <TableHead className="text-right">{t.common.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -175,10 +190,10 @@ export const CompetitionsPage = () => {
                   <TableCell>
                     {competition.participants.length} / {competition.maxParticipants}
                   </TableCell>
-                  <TableCell>${competition.entryFee.toFixed(2)}</TableCell>
+                  <TableCell>{competition.entryFee.toFixed(2)} €</TableCell>
                   <TableCell>
                     <Badge variant={getStatusBadgeVariant(competition.status)}>
-                      {competition.status}
+                      {getStatusLabel(competition.status)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -206,35 +221,35 @@ export const CompetitionsPage = () => {
         </div>
       )}
 
-      {/* Add/Edit Dialog */}
+      {/* Dialogue Ajouter/Modifier */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editMode ? 'Edit Competition' : 'Add New Competition'}</DialogTitle>
+            <DialogTitle>{editMode ? t.competitions.editCompetition : t.competitions.addNewCompetition}</DialogTitle>
             <DialogDescription>
-              {editMode ? 'Update competition details.' : 'Create a new golf competition.'}
+              {editMode ? t.competitions.updateCompetitionInfo : t.competitions.createNewCompetition}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Competition Name</Label>
+              <Label>{t.competitions.competitionName}</Label>
               <Input
-                placeholder="Summer Championship 2024"
+                placeholder={t.competitions.competitionNamePlaceholder}
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
             <div className="space-y-2">
-              <Label>Description</Label>
+              <Label>{t.competitions.description}</Label>
               <Textarea
-                placeholder="Competition details and rules..."
+                placeholder={t.competitions.descriptionPlaceholder}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
               />
             </div>
             <div className="space-y-2">
-              <Label>Date</Label>
+              <Label>{t.competitions.date}</Label>
               <Input
                 type="date"
                 value={formData.date}
@@ -243,7 +258,7 @@ export const CompetitionsPage = () => {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Max Participants</Label>
+                <Label>{t.competitions.maxParticipants}</Label>
                 <Input
                   type="number"
                   value={formData.maxParticipants}
@@ -252,7 +267,7 @@ export const CompetitionsPage = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Entry Fee ($)</Label>
+                <Label>{t.competitions.entryFee} (€)</Label>
                 <Input
                   type="number"
                   step="0.01"
@@ -265,10 +280,10 @@ export const CompetitionsPage = () => {
           </div>
           <div className="flex justify-end space-x-2">
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Cancel
+              {t.common.cancel}
             </Button>
             <Button onClick={handleSubmit}>
-              {editMode ? 'Save Changes' : 'Create Competition'}
+              {editMode ? t.common.saveChanges : t.common.create}
             </Button>
           </div>
         </DialogContent>
