@@ -266,7 +266,7 @@ export const CompetitionsPage = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>{t.competitions.entryFee} (€)</Label>
+                <Label>{t.competitions.entryFee} (FCFA)</Label>
                 <Input
                   type="number"
                   step="0.01"
