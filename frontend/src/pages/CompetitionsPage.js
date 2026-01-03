@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { DashboardLayout } from '../components/DashboardLayout';
 import { PageHeader, LoadingSpinner, EmptyState } from '../components/SharedComponents';
 import { useTranslation } from '../contexts/I18nContext';
+import { formatCurrency } from '../lib/formatters';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
