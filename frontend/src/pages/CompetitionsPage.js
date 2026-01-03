@@ -188,10 +188,8 @@ export const CompetitionsPage = () => {
                 <TableRow key={competition.id}>
                   <TableCell className="font-medium">{competition.name}</TableCell>
                   <TableCell>{competition.date}</TableCell>
-                  <TableCell>
-                    {competition.participants.length} / {competition.maxParticipants}
-                  </TableCell>
-                  <TableCell>{competition.entryFee.toFixed(2)} €</TableCell>
+                  <TableCell>{competition.participants.length} / {competition.maxParticipants}</TableCell>
+                  <TableCell>{formatCurrency(competition.entryFee)}</TableCell>
                   <TableCell>
                     <Badge variant={getStatusBadgeVariant(competition.status)}>
                       {getStatusLabel(competition.status)}
